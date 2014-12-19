@@ -12,6 +12,12 @@ Currently only supports a single token, passed to `ProductHunt::API.new(token)`.
 
 * [posts#show - Get details of a post](https://api.producthunt.com/v1/docs/posts/posts_show_get_details_of_a_post)
 * [votes#index - See all votes for a post](https://api.producthunt.com/v1/docs/postvotes/votes_index_see_all_votes_for_a_post)
+* [users#show - Get details of a user](https://api.producthunt.com/v1/docs/users/users_show_get_details_of_a_user)
+
+
+### In Progress
+
+* [comments#index - Fetch all comments of a post](https://api.producthunt.com/v1/docs/comments/comments_index_fetch_all_comments_of_a_post)
 
 
 ## Examples
