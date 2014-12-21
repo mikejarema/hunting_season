@@ -52,6 +52,7 @@ describe ProductHunt do
         end
 
         it 'implements comments#index with pagination' do
+          pending("https://github.com/producthunt/producthunt-api/issues/35")
           comments = @post.comments(per_page: 1, order: 'asc')
           comments.size.should be(1)
 
