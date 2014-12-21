@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'rspec/todo'
 
 describe ProductHunt do
 
@@ -51,14 +52,16 @@ describe ProductHunt do
           comment['user']['username'].should == 'andreasklinger'
         end
 
+        include ::RSpec::Todo
         it 'implements comments#index with pagination' do
-          pending("https://github.com/producthunt/producthunt-api/issues/35")
-          comments = @post.comments(per_page: 1, order: 'asc')
-          comments.size.should be(1)
+          todo do # https://github.com/producthunt/producthunt-api/issues/35
+            comments = @post.comments(per_page: 1, order: 'asc')
+            comments.size.should be(1)
 
-          comments = @post.comments(per_page: 1, older: comments.first['id'], order: 'asc')
-          comments.size.should be(1)
-          comments.first['user']['username'].should == 'dshan'
+            comments = @post.comments(per_page: 1, older: comments.first['id'], order: 'asc')
+            comments.size.should be(1)
+            comments.first['user']['username'].should == 'dshan'
+          end
         end
 
       end
