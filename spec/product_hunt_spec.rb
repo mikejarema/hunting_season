@@ -1,8 +1,6 @@
 require 'spec_helper'
 require 'rspec/todo'
 
-# require 'debugger'
-
 describe ProductHunt do
 
   before(:each) do
@@ -21,7 +19,7 @@ describe ProductHunt do
         posts = @api.posts
         expect(posts.size).to be > 0
 
-        # debugger
+        # require 'debugger'; debugger
         post = posts.first
       end
 
