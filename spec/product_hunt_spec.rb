@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'rspec/todo'
 
+# require 'debugger'
+
 describe ProductHunt do
 
   before(:each) do
@@ -9,58 +11,66 @@ describe ProductHunt do
 
   describe 'API' do
 
-    it 'requires an API token (eg. env TOKEN=mytoken bundle exec rake)' do
+    it 'requires a valid API token (eg. env TOKEN=mytoken bundle exec rake)' do
       ENV["TOKEN"].should_not be_empty
     end
 
     describe 'Posts' do
 
-      before(:each) do
-        @post = @api.posts(3372)
+      it 'implements posts#index and yields the hunts for today' do
+        posts = @api.posts
+        expect(posts.size).to be > 0
+
+        # debugger
+        post = posts.first
       end
 
-      it 'implements posts#show and yields the name of the post' do
-        @post['name'].should == 'namevine'
-      end
+      describe 'by id' do
 
-      describe 'Votes' do
-
-        it 'implements votes#index and yields the first voter' do
-          vote = @post.votes.first
-
-          vote.should be_a(ProductHunt::API::Vote)
-          vote['user']['username'].should == '1korda'
+        before(:each) do
+          @post = @api.posts(3372)
         end
 
-        it 'implements votes#index with pagination' do
-          votes = @post.votes(per_page: 1)
-          votes.size.should be(1)
-
-          votes = @post.votes(per_page: 1, older: votes.first['id'])
-          votes.size.should be(1)
-          votes.first['user']['username'].should == 'mikejarema'
+        it 'implements posts#show and yields the name of the post' do
+          @post['name'].should == 'namevine'
         end
 
-      end
+        describe 'Votes' do
+          it 'implements votes#index and yields the first voter' do
+            vote = @post.votes.first
 
-      describe 'Comments' do
+            vote.should be_a(ProductHunt::API::Vote)
+            vote['user']['username'].should == '1korda'
+          end
 
-        it 'implements comments#index and yields the first voter' do
-          comment = @post.comments(order: 'asc').first
+          it 'implements votes#index with pagination' do
+            votes = @post.votes(per_page: 1)
+            votes.size.should be(1)
 
-          comment.should be_a(ProductHunt::API::Comment)
-          comment['user']['username'].should == 'andreasklinger'
+            votes = @post.votes(per_page: 1, older: votes.first['id'])
+            votes.size.should be(1)
+            votes.first['user']['username'].should == 'mikejarema'
+          end
         end
 
-        include ::RSpec::Todo
-        it 'implements comments#index with pagination' do
-          todo do # https://github.com/producthunt/producthunt-api/issues/35
-            comments = @post.comments(per_page: 1, order: 'asc')
-            comments.size.should be(1)
+        describe 'Comments' do
+          it 'implements comments#index and yields the first voter' do
+            comment = @post.comments(order: 'asc').first
 
-            comments = @post.comments(per_page: 1, older: comments.first['id'], order: 'asc')
-            comments.size.should be(1)
-            comments.first['user']['username'].should == 'dshan'
+            comment.should be_a(ProductHunt::API::Comment)
+            comment['user']['username'].should == 'andreasklinger'
+          end
+
+          include ::RSpec::Todo
+          it 'implements comments#index with pagination' do
+            todo do # https://github.com/producthunt/producthunt-api/issues/35
+              comments = @post.comments(per_page: 1, order: 'asc')
+              comments.size.should be(1)
+
+              comments = @post.comments(per_page: 1, older: comments.first['id'], order: 'asc')
+              comments.size.should be(1)
+              comments.first['user']['username'].should == 'dshan'
+            end
           end
         end
 
