@@ -38,6 +38,16 @@ module ProductHunt
       end
     end
 
+    def created_at
+      Time.parse(self["created_at"])
+    end
+
+    def day
+      Time.parse(self["day"]).to_date
+    end
+
+  # Class Methods
+
     def self.where(api, options)
       self.fetch_posts(api, options).map{|i| API::Post.new(api, i)}
     end

@@ -22,6 +22,8 @@ module ProductHunt
         post = Post.new(self, options_or_id_or_nil)
       elsif options_or_id_or_nil.nil?
         Post.where(self, {})
+      elsif options_or_id_or_nil.is_a?(Hash)
+        Post.where(self, options_or_id_or_nil)
       else
         raise InvalidArgumentError.new("#{options_or_id_or_nil} is not supported by ProductHunt::API#posts")
       end

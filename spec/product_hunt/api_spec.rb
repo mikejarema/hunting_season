@@ -19,8 +19,21 @@ describe ProductHunt do
         posts = @api.posts
         expect(posts.size).to be > 0
 
-        # require 'debugger'; debugger
         post = posts.first
+        day = post.day
+
+        expect(Time.now.to_date - day).to be <= 86400 # either today's or yesterdays
+      end
+
+      it 'implements posts#index and yields the hunts for days_ago: 10' do
+        posts = @api.posts(days_ago: 10)
+        expect(posts.size).to be > 0
+
+        post = posts.first
+        day = post.day
+
+        expect(Time.now.to_date - day).to be >= 10 # at least 10 day old and
+        expect(Time.now.to_date - day).to be <= 11 # at most 11 days old
       end
 
       describe 'by id' do
