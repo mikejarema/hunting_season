@@ -16,4 +16,5 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rspec", '~> 2' # waiting on https://github.com/okitan/rspec-todo/issues/2 before bumping to 3
   s.add_development_dependency "rspec-todo", '~> 0'
+  s.add_development_dependency "webmock", "~> 1.20.0"
 end
