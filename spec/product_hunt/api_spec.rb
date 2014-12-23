@@ -16,6 +16,9 @@ describe ProductHunt do
     describe 'Posts' do
 
       it 'implements posts#index and yields the hunts for today' do
+        stub_request(:get, "https://api.producthunt.com/v1/posts").
+          to_return(File.new("./spec/support/index_response.txt"))
+
         posts = @api.posts
         expect(posts.size).to be > 0
 
@@ -26,6 +29,9 @@ describe ProductHunt do
       end
 
       it 'implements posts#index and yields the hunts for days_ago: 10' do
+        stub_request(:get, "https://api.producthunt.com/v1/posts?days_ago=10").
+          to_return(File.new("./spec/support/index_with_10day_param_response.txt"))
+
         posts = @api.posts(days_ago: 10)
         expect(posts.size).to be > 0
 
@@ -39,6 +45,8 @@ describe ProductHunt do
       describe 'by id' do
 
         before(:each) do
+          stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
+            to_return(File.new("./spec/support/get_post.txt"))
           @post = @api.posts(3372)
         end
 
@@ -47,7 +55,17 @@ describe ProductHunt do
         end
 
         describe 'Votes' do
+
+          before(:each) do
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
+            to_return(File.new("./spec/support/get_post.txt"))
+            @post = @api.posts(3372)
+          end
+
           it 'implements votes#index and yields the first voter' do
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes").
+              to_return(File.new("./spec/support/get_post_votes.txt"))
+
             vote = @post.votes.first
 
             vote.should be_a(ProductHunt::API::Vote)
@@ -55,8 +73,14 @@ describe ProductHunt do
           end
 
           it 'implements votes#index with pagination' do
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?per_page=1").
+              to_return(File.new("./spec/support/get_post_votes_per_page.txt"))
+
             votes = @post.votes(per_page: 1)
             votes.size.should be(1)
+
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?older=508515&per_page=1").
+              to_return(File.new("./spec/support/get_post_votes_per_page_older.txt"))
 
             votes = @post.votes(per_page: 1, older: votes.first['id'])
             votes.size.should be(1)
@@ -66,6 +90,9 @@ describe ProductHunt do
 
         describe 'Comments' do
           it 'implements comments#index and yields the first voter' do
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc").
+              to_return(File.new("./spec/support/comments_index.txt"))
+
             comment = @post.comments(order: 'asc').first
 
             comment.should be_a(ProductHunt::API::Comment)
@@ -75,8 +102,14 @@ describe ProductHunt do
           include ::RSpec::Todo
           it 'implements comments#index with pagination' do
             todo do # https://github.com/producthunt/producthunt-api/issues/35
+              stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc&per_page=1").
+                to_return(File.new("./spec/support/comments_index_per_page.txt"))
+
               comments = @post.comments(per_page: 1, order: 'asc')
               comments.size.should be(1)
+
+              stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?older=52080&order=asc&per_page=1").
+                to_return(File.new("./spec/support/comments_index_per_page_older.txt"))
 
               comments = @post.comments(per_page: 1, older: comments.first['id'], order: 'asc')
               comments.size.should be(1)
@@ -92,6 +125,9 @@ describe ProductHunt do
     describe 'Users' do
 
       it 'implements users#show and yields the details of a specific user' do
+        stub_request(:get, "https://api.producthunt.com/v1/users/rrhoover").
+          to_return(File.new("./spec/support/get_user.txt"))
+
         user = @api.users('rrhoover')
 
         user['name'].should == 'Ryan Hoover'

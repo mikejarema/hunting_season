@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "post": {
+        "id": 3372,
+        "name": "namevine"
+    }
+}
