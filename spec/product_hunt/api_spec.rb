@@ -10,7 +10,7 @@ describe ProductHunt do
   describe 'API' do
 
     it 'requires a valid API token (eg. env TOKEN=mytoken bundle exec rake)' do
-      ENV["TOKEN"].should_not be_empty
+      ENV["TOKEN"].should_not be_nil
     end
 
     describe 'Posts' do
