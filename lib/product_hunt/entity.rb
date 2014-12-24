@@ -1,13 +1,14 @@
 module ProductHunt
+  module Entity
 
-  class API::Comment
-    def initialize(api, attributes)
+    def initialize(attributes, client)
       @attributes = attributes
+      @client = client
     end
 
     def [](key)
       @attributes[key]
     end
-  end
 
+  end
 end
