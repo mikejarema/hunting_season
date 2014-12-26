@@ -4,9 +4,10 @@ require 'uri'
 module ProductHunt
   class Client
     include HTTParty
-    include ProductHunt::API
     base_uri 'https://api.producthunt.com/v1/'
     format :json
+
+    include ProductHunt::API
 
     def initialize(token)
       @config = { headers: { "Authorization" => "Bearer #{token}" } }
@@ -21,7 +22,7 @@ module ProductHunt
         "?" + URI.encode_www_form(params)
       end
 
-      self.class.get(path + (queryopts || ""))
+      self.class.get(path + (queryopts || ""), @config)
     end
   end
 end
