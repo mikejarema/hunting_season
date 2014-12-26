@@ -11,11 +11,19 @@ module ProductHunt
     end
 
     def votes(options = {})
-      @votes ||= @client.votes_for_post(self["id"], options)
+      if options != @votes_options
+        @votes = @client.votes_for_post(self["id"], options)
+        @votes_options = options
+      end
+      @votes
     end
 
     def comments(options = {})
-      @comments ||= @client.comments_for_post(self["id"], options)
+      if options != @comments_options
+        @comments = @client.comments_for_post(self["id"], options)
+        @comments_options = options
+      end
+      @comments
     end
   end
 end

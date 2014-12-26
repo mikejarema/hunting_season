@@ -17,7 +17,7 @@ module ProductHunt
     end
 
     def fetch(path, params)
-      queryopts = if params.is_a?(Enumerable)
+      queryopts = if params.is_a?(Enumerable) && params.size > 0
         "?" + URI.encode_www_form(params)
       end
 
