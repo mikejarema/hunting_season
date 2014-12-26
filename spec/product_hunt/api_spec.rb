@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'rspec/todo'
 
 describe ProductHunt do
 
@@ -99,22 +98,19 @@ describe ProductHunt do
             comment['user']['username'].should == 'andreasklinger'
           end
 
-          include ::RSpec::Todo
           it 'implements comments#index with pagination' do
-            todo do # https://github.com/producthunt/producthunt-api/issues/35
-              stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc&per_page=1").
-                to_return(File.new("./spec/support/comments_index_per_page.txt"))
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc&per_page=1").
+              to_return(File.new("./spec/support/comments_index_per_page.txt"))
 
-              comments = @post.comments(per_page: 1, order: 'asc')
-              comments.size.should be(1)
+            comments = @post.comments(per_page: 1, order: 'asc')
+            comments.size.should be(1)
 
-              stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?older=52080&order=asc&per_page=1").
-                to_return(File.new("./spec/support/comments_index_per_page_older.txt"))
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?newer=52080&order=asc&per_page=1").
+              to_return(File.new("./spec/support/comments_index_per_page_older.txt"))
 
-              comments = @post.comments(per_page: 1, older: comments.first['id'], order: 'asc')
-              comments.size.should be(1)
-              comments.first['user']['username'].should == 'dshan'
-            end
+            comments = @post.comments(per_page: 1, newer: comments.first['id'], order: 'asc')
+            comments.size.should be(1)
+            comments.first['user']['username'].should == 'dshan'
           end
         end
 
