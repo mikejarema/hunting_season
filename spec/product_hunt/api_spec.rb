@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe ProductHunt do
 
+  TIMESTAMP_FORMAT = '%FT%T.%L%:z'
+  DATESTAMP_FORMAT = '%F'
+
   before(:each) do
     @api = ProductHunt::API.new(ENV['TOKEN'] || 'my-token')
   end
@@ -16,7 +19,11 @@ describe ProductHunt do
 
       it 'implements posts#index and yields the hunts for today' do
         stub_request(:get, "https://api.producthunt.com/v1/posts").
-          to_return(File.new("./spec/support/index_response.txt"))
+          to_return(lambda { |request|
+            File.new("./spec/support/index_response.txt").read.
+              gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
+              gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
+          })
 
         posts = @api.posts
         expect(posts.size).to be > 0
@@ -24,12 +31,16 @@ describe ProductHunt do
         post = posts.first
         day = post.day
 
-        expect(Time.now.to_date - day).to be <= 86400 # either today's or yesterdays
+        expect(Time.now.to_date - day).to be <= 1 # either today's or yesterdays
       end
 
       it 'implements posts#index and yields the hunts for days_ago: 10' do
         stub_request(:get, "https://api.producthunt.com/v1/posts?days_ago=10").
-          to_return(File.new("./spec/support/index_with_10day_param_response.txt"))
+          to_return(lambda { |request|
+            File.new("./spec/support/index_with_10day_param_response.txt").read.
+              gsub(/POST_TIMESTAMP/, (Time.now - 10 * 86400).strftime(TIMESTAMP_FORMAT)).
+              gsub(/POST_DATESTAMP/, (Time.now - 10 * 86400).strftime(DATESTAMP_FORMAT))
+          })
 
         posts = @api.posts(days_ago: 10)
         expect(posts.size).to be > 0
