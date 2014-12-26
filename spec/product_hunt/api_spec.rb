@@ -105,10 +105,10 @@ describe ProductHunt do
             comments = @post.comments(per_page: 1, order: 'asc')
             comments.size.should be(1)
 
-            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?newer=52080&order=asc&per_page=1").
-              to_return(File.new("./spec/support/comments_index_per_page_older.txt"))
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?per_page=1&order=asc&newer=11378").
+              to_return(File.new("./spec/support/comments_index_per_page_newer.txt"))
 
-            comments = @post.comments(per_page: 1, newer: comments.first['id'], order: 'asc')
+            comments = @post.comments(per_page: 1, order: 'asc', newer: comments.first['id'])
             comments.size.should be(1)
             comments.first['user']['username'].should == 'dshan'
           end
