@@ -6,7 +6,7 @@ describe ProductHunt do
   DATESTAMP_FORMAT = '%F'
 
   before(:each) do
-    @api = ProductHunt::API.new(ENV['TOKEN'] || 'my-token')
+    @api = ProductHunt::Client.new(ENV['TOKEN'] || 'my-token')
   end
 
   describe 'API' do
@@ -57,7 +57,7 @@ describe ProductHunt do
         before(:each) do
           stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
             to_return(File.new("./spec/support/get_post.txt"))
-          @post = @api.posts(3372)
+          @post = @api.post(3372)
         end
 
         it 'implements posts#show and yields the name of the post' do
@@ -69,7 +69,7 @@ describe ProductHunt do
           before(:each) do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
             to_return(File.new("./spec/support/get_post.txt"))
-            @post = @api.posts(3372)
+            @post = @api.post(3372)
           end
 
           it 'implements votes#index and yields the first voter' do
@@ -78,7 +78,7 @@ describe ProductHunt do
 
             vote = @post.votes.first
 
-            vote.should be_a(ProductHunt::API::Vote)
+            vote.should be_a(ProductHunt::Vote)
             vote['user']['username'].should == '1korda'
           end
 
@@ -105,7 +105,7 @@ describe ProductHunt do
 
             comment = @post.comments(order: 'asc').first
 
-            comment.should be_a(ProductHunt::API::Comment)
+            comment.should be_a(ProductHunt::Comment)
             comment['user']['username'].should == 'andreasklinger'
           end
 
@@ -135,7 +135,7 @@ describe ProductHunt do
         stub_request(:get, "https://api.producthunt.com/v1/users/rrhoover").
           to_return(File.new("./spec/support/get_user.txt"))
 
-        user = @api.users('rrhoover')
+        user = @api.user('rrhoover')
 
         user['name'].should == 'Ryan Hoover'
         user['id'].should == 2
