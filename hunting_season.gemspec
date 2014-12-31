@@ -5,7 +5,6 @@ Gem::Specification.new do |s|
   s.description   = %q{Ruby gem which interfaces with Product Hunt's official REST API (api.producthunt.com). This gem is a work-in-progress which allows for calls to some of the offical API's endpoints (see README).}
   s.summary       = %q{Ruby interface to producthunt.com's offical REST API.}
   s.authors       = ["Mike Jarema"]
-  s.date          = %q{2014-12-18}
   s.email         = %q{mike@jarema.com}
   s.files         = Dir.glob("{lib}/**/*") + %w(LICENSE README.md VERSION)
   s.homepage      = %q{http://rubygems.org/gems/hunting_season}
