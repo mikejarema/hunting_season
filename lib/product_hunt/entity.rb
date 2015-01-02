@@ -10,26 +10,18 @@ module ProductHunt
       @attributes[key]
     end
 
-    def user
-      if @client.is_a?(Client) && @attributes['user'].is_a?(Hash) && @attributes['user']['id']
-        @client.user(@attributes['user']['id'])
-      else
-        raise_no_method_error('user')
-      end
-    end
-
-    def post
-      if @client.is_a?(Client) && @attributes['post_id']
-        @client.post(@attributes['post_id'])
-      else
-        raise_no_method_error('post')
-      end
-    end
-
-  private
-
-    def raise_no_method_error(method)
-      raise NoMethodError.new("undefined method `#{method}' for #{self.inspect}:#{self.class.name}")
+    [:user, :post].each do |method|
+      eval <<-GENERATED_METHOD
+        def #{method}
+          if @client.is_a?(Client) && @attributes['#{method}'].is_a?(Hash) && @attributes['#{method}']['id']
+            @client.send('#{method}', @attributes['#{method}']['id'])
+          elsif @client.is_a?(Client) && @attributes['#{method}_id']
+            @client.send('#{method}', @attributes['#{method}_id'])
+          else
+            raise NoMethodError.new("undefined method `#{method}' for " + self.inspect)
+          end
+        end
+      GENERATED_METHOD
     end
 
   end

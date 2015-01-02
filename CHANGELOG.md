@@ -1,7 +1,7 @@
 # Next Release
 
 - updated README to include further notes on authentication, code examples, contribution notes
-- instantiating child objects via ProductHunt::Entity#user and #post
+- instantiating associated objects via ProductHunt::Entity#user and #post
 - removing depracted .should syntax in specs in favour of expect().to
 
 # 0.0.3

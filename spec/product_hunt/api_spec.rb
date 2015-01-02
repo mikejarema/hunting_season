@@ -57,6 +57,7 @@ describe ProductHunt do
         before(:each) do
           stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
             to_return(File.new("./spec/support/get_post.txt"))
+
           @post = @client.post(3372)
         end
 
@@ -64,11 +65,25 @@ describe ProductHunt do
           expect(@post['name']).to eq('namevine')
         end
 
+        describe 'associated objects' do
+
+          it 'should return a User object when #user is called' do
+            stub_request(:get, "https://api.producthunt.com/v1/users/962").
+              to_return(File.new("./spec/support/get_user_962.txt"))
+
+            user = @post.user
+            expect(user["id"]).to eq(@post["user"]["id"])
+            expect(user["name"]).to eq(@post["user"]["name"])
+          end
+
+        end
+
         describe 'Votes' do
 
           before(:each) do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
-            to_return(File.new("./spec/support/get_post.txt"))
+              to_return(File.new("./spec/support/get_post.txt"))
+
             @post = @client.post(3372)
           end
 
@@ -97,11 +112,12 @@ describe ProductHunt do
             expect(votes.first['user']['username']).to eq('mikejarema')
           end
 
-          describe 'child objects' do
+          describe 'associated objects' do
 
             before(:each) do
               stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes").
                 to_return(File.new("./spec/support/get_post_votes.txt"))
+
               @vote = @post.votes.first
             end
 
@@ -151,11 +167,12 @@ describe ProductHunt do
             expect(comments.first['user']['username']).to eq('dshan')
           end
 
-          describe 'child objects' do
+          describe 'associated objects' do
 
             before(:each) do
               stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc").
                 to_return(File.new("./spec/support/comments_index.txt"))
+
               @comment = @post.comments(order: 'asc').first
             end
 
@@ -203,15 +220,15 @@ describe ProductHunt do
         stub_request(:get, "https://api.producthunt.com/v1/users/rrhoover").
           to_return(File.new("./spec/support/get_user.txt"))
 
-        @entity_without_post_or_user_children = @client.user('rrhoover')
+        @user_entity_without_associated_post_or_user = @client.user('rrhoover')
       end
 
       it 'should not attempt to instantiate a Post where its attributes do not imply one' do
-        expect { @entity_without_post_or_user_children.post }.to raise_error(NoMethodError)
+        expect { @user_entity_without_associated_post_or_user.post }.to raise_error(NoMethodError)
       end
 
       it 'should not attempt to instantiate a User where its attributes do not imply one' do
-        expect { @entity_without_post_or_user_children.user }.to raise_error(NoMethodError)
+        expect { @user_entity_without_associated_post_or_user.user }.to raise_error(NoMethodError)
       end
 
     end

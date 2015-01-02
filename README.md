@@ -1,11 +1,11 @@
 # hunting_season [![Build Status](https://secure.travis-ci.org/mikejarema/hunting_season.png)](http://travis-ci.org/mikejarema/hunting_season)
 
-Ruby gem for interacting with the official [Product Hunt API](https://api.producthunt.com/v1/docs).
+`hunting_season` is a ruby gem for interacting with the official [Product Hunt API](https://api.producthunt.com/v1/docs).
 
 
 ## Authentication
 
-This gem can use any valid API token. Sources include:
+`hunting_season` can use any valid API token. Sources include:
 
 1. A `Developer Token` generated in the [Product Hunt API Dashboard](http://www.producthunt.com/v1/oauth/applications).
 
@@ -22,7 +22,7 @@ client = ProductHunt::Client.new('mytoken')
 
 ## Supported Endpoints
 
-This gem is a work-in-progress, please [contribute](#contributing) if you need more functionality.
+`hunting_season` is a work-in-progress, please [contribute](#contributing) if you need additional functionality.
 
 
 ### [posts#show - Get details of a post](https://api.producthunt.com/v1/docs/posts/posts_show_get_details_of_a_post)
@@ -34,6 +34,7 @@ Post attributes are listed in the API docs and accessed like `post["name"]`, `po
 Example:
 ```
 client = ProductHunt::Client.new('mytoken')
+
 post = client.post(3372)
 post["name"]
 # => "namevine"
@@ -106,6 +107,35 @@ comments_page_2[0]["id"]
 # => "Mike Jarema: Namevine developer here -- feel free to ask any Qs about ..."
 ```
 
+
+### Accessing associated records
+
+For some API responses, an ID reference to or partial details for an associated User or Post are supplied. `hunting_season` provides convenience methods to access the full details of these associated records.
+
+Currently `#post` and `#user` apply when the associated record is present.
+
+Example:
+```
+comment = ProductHunt::Client.new('mytoken').post(3372).comments(order: 'asc').first
+
+user_hash = comment["user"]   # this will access the partial user details embedded in the response to the #comments call above
+user_hash.class
+# => Hash
+user_hash["name"]
+# => "Andreas Klinger"
+
+user_object = comment.user    # this will make a separate call to pull the full details of the user who commented
+user_object.class
+# => ProductHunt::User
+user_object["name"]
+# => "Andreas Klinger"
+
+post_object = comment.post    # likewise for the associated post, this will pull full details of the post on which a comment was made via an additional API call
+post_object.class
+# => ProductHunt::Post
+post_object["name"]
+# => "namevine"
+```
 
 ## Tests
 
