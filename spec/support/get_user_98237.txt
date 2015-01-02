@@ -1,0 +1,40 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "user": {
+        "created_at": "2014-10-31T02:42:33.158-07:00",
+        "followers": [
+        ],
+        "followers_count": 2,
+        "followings": [
+        ],
+        "followings_count": 21,
+        "headline": "",
+        "id": 98237,
+        "image_url": {
+        },
+        "maker_of": [],
+        "maker_of_count": 0,
+        "name": "1korda",
+        "posts": [],
+        "posts_count": 0,
+        "profile_url": "http://www.producthunt.com/1korda",
+        "send_announcement_email": true,
+        "send_announcement_push": true,
+        "send_friend_post_email": true,
+        "send_friend_post_push": true,
+        "send_mention_email": true,
+        "send_mention_push": true,
+        "send_new_follower_email": true,
+        "send_new_follower_push": true,
+        "send_product_recommendation_email": true,
+        "send_product_recommendation_push": true,
+        "subscribed_to_push": false,
+        "username": "1korda",
+        "votes": [
+        ],
+        "votes_count": 6,
+        "website_url": null
+    }
+}
