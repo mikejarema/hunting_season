@@ -4,6 +4,32 @@ Content-Type: application/json; charset=utf-8
 {
     "post": {
         "id": 3372,
-        "name": "namevine"
+        "name": "namevine",
+        "user": {
+            "created_at": "2013-12-27T19:11:57.186-08:00",
+            "headline": "Co-Founded Vungle - Advisor to Coin",
+            "id": 962,
+            "image_url": {
+                "32px": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu432.png",
+                "32px@2X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu432@2X.png",
+                "32px@3X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu432@3X.png",
+                "40px": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu440.png",
+                "40px@2X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu440@2X.png",
+                "40px@3X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu440@3X.png",
+                "44px": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu444.png",
+                "44px@2X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu444@2X.png",
+                "44px@3X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu444@3X.png",
+                "48px": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu448.png",
+                "73px": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu473.png",
+                "88px": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu488.png",
+                "88px@2X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu488@2X.png",
+                "88px@3X": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu488@3X.png",
+                "original": "http://aws.producthunt.com/profile_image/67291/1416413759-022ehIu4.png"
+            },
+            "name": "Jack Smith ",
+            "profile_url": "http://www.producthunt.com/_jacksmith",
+            "username": "_jacksmith",
+            "website_url": "http://jack.vu"
+        }
     }
 }

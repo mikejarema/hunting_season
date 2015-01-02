@@ -12,7 +12,7 @@ describe ProductHunt do
   describe 'API' do
 
     it 'requires a valid API token (eg. env TOKEN=mytoken bundle exec rake)' do
-      ENV["TOKEN"].should_not be_nil
+      expect(ENV["TOKEN"]).to_not be_nil
     end
 
     describe 'Posts' do
@@ -57,18 +57,33 @@ describe ProductHunt do
         before(:each) do
           stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
             to_return(File.new("./spec/support/get_post.txt"))
+
           @post = @client.post(3372)
         end
 
         it 'implements posts#show and yields the name of the post' do
-          @post['name'].should == 'namevine'
+          expect(@post['name']).to eq('namevine')
+        end
+
+        describe 'associated objects' do
+
+          it 'should return a User object when #user is called' do
+            stub_request(:get, "https://api.producthunt.com/v1/users/962").
+              to_return(File.new("./spec/support/get_user_962.txt"))
+
+            user = @post.user
+            expect(user["id"]).to eq(@post["user"]["id"])
+            expect(user["name"]).to eq(@post["user"]["name"])
+          end
+
         end
 
         describe 'Votes' do
 
           before(:each) do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
-            to_return(File.new("./spec/support/get_post.txt"))
+              to_return(File.new("./spec/support/get_post.txt"))
+
             @post = @client.post(3372)
           end
 
@@ -78,8 +93,8 @@ describe ProductHunt do
 
             vote = @post.votes.first
 
-            vote.should be_a(ProductHunt::Vote)
-            vote['user']['username'].should == '1korda'
+            expect(vote).to be_a(ProductHunt::Vote)
+            expect(vote['user']['username']).to eq('1korda')
           end
 
           it 'implements votes#index with pagination' do
@@ -87,15 +102,43 @@ describe ProductHunt do
               to_return(File.new("./spec/support/get_post_votes_per_page.txt"))
 
             votes = @post.votes(per_page: 1)
-            votes.size.should be(1)
+            expect(votes.size).to be(1)
 
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?older=508515&per_page=1").
               to_return(File.new("./spec/support/get_post_votes_per_page_older.txt"))
 
             votes = @post.votes(per_page: 1, older: votes.first['id'])
-            votes.size.should be(1)
-            votes.first['user']['username'].should == 'mikejarema'
+            expect(votes.size).to be(1)
+            expect(votes.first['user']['username']).to eq('mikejarema')
           end
+
+          describe 'associated objects' do
+
+            before(:each) do
+              stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes").
+                to_return(File.new("./spec/support/get_post_votes.txt"))
+
+              @vote = @post.votes.first
+            end
+
+            it 'should return a User object when #user is called' do
+              stub_request(:get, "https://api.producthunt.com/v1/users/98237").
+                to_return(File.new("./spec/support/get_user_98237.txt"))
+
+              user = @vote.user
+              expect(user).to be_a(ProductHunt::User)
+              expect(user["id"]).to eq(@vote["user"]["id"])
+              expect(user["name"]).to eq(@vote["user"]["name"])
+            end
+
+            it 'should return a Post object when #post is called' do
+              post = @vote.post
+              expect(post).to be_a(ProductHunt::Post)
+              expect(post["id"]).to eq(@vote["post_id"])
+            end
+
+          end
+
         end
 
         describe 'Comments' do
@@ -105,8 +148,8 @@ describe ProductHunt do
 
             comment = @post.comments(order: 'asc').first
 
-            comment.should be_a(ProductHunt::Comment)
-            comment['user']['username'].should == 'andreasklinger'
+            expect(comment).to be_a(ProductHunt::Comment)
+            expect(comment['user']['username']).to eq('andreasklinger')
           end
 
           it 'implements comments#index with pagination' do
@@ -114,15 +157,43 @@ describe ProductHunt do
               to_return(File.new("./spec/support/comments_index_per_page.txt"))
 
             comments = @post.comments(per_page: 1, order: 'asc')
-            comments.size.should be(1)
+            expect(comments.size).to be(1)
 
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?per_page=1&order=asc&newer=11378").
               to_return(File.new("./spec/support/comments_index_per_page_newer.txt"))
 
             comments = @post.comments(per_page: 1, order: 'asc', newer: comments.first['id'])
-            comments.size.should be(1)
-            comments.first['user']['username'].should == 'dshan'
+            expect(comments.size).to be(1)
+            expect(comments.first['user']['username']).to eq('dshan')
           end
+
+          describe 'associated objects' do
+
+            before(:each) do
+              stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc").
+                to_return(File.new("./spec/support/comments_index.txt"))
+
+              @comment = @post.comments(order: 'asc').first
+            end
+
+            it 'should return a User object when #user is called' do
+              stub_request(:get, "https://api.producthunt.com/v1/users/4557").
+                to_return(File.new("./spec/support/get_user_4557.txt"))
+
+              user = @comment.user
+              expect(user).to be_a(ProductHunt::User)
+              expect(user["id"]).to eq(@comment["user"]["id"])
+              expect(user["name"]).to eq(@comment["user"]["name"])
+            end
+
+            it 'should return a Post object when #post is called' do
+              post = @comment.post
+              expect(post).to be_a(ProductHunt::Post)
+              expect(post["id"]).to eq(@comment["post_id"])
+            end
+
+          end
+
         end
 
       end
@@ -137,8 +208,27 @@ describe ProductHunt do
 
         user = @client.user('rrhoover')
 
-        user['name'].should == 'Ryan Hoover'
-        user['id'].should == 2
+        expect(user['name']).to eq('Ryan Hoover')
+        expect(user['id']).to eq(2)
+      end
+
+    end
+
+    describe 'Entity' do
+
+      before(:each) do
+        stub_request(:get, "https://api.producthunt.com/v1/users/rrhoover").
+          to_return(File.new("./spec/support/get_user.txt"))
+
+        @user_entity_without_associated_post_or_user = @client.user('rrhoover')
+      end
+
+      it 'should not attempt to instantiate a Post where its attributes do not imply one' do
+        expect { @user_entity_without_associated_post_or_user.post }.to raise_error(NoMethodError)
+      end
+
+      it 'should not attempt to instantiate a User where its attributes do not imply one' do
+        expect { @user_entity_without_associated_post_or_user.user }.to raise_error(NoMethodError)
       end
 
     end
