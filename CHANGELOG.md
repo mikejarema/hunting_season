@@ -1,4 +1,4 @@
-# Next Release
+# 0.0.4
 
 - updated README to include further notes on authentication, code examples, contribution notes
 - instantiating associated objects via ProductHunt::Entity#user and #post
