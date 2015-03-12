@@ -91,25 +91,25 @@ describe ProductHunt do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes").
               to_return(File.new("./spec/support/get_post_votes.txt"))
 
-            vote = @post.votes.first
+            vote = @post.votes(order: 'asc').first
 
             expect(vote).to be_a(ProductHunt::Vote)
-            expect(vote['user']['username']).to eq('1korda')
+            expect(vote['user']['username']).to eq('_jacksmith')
           end
 
           it 'implements votes#index with pagination' do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?per_page=1").
               to_return(File.new("./spec/support/get_post_votes_per_page.txt"))
 
-            votes = @post.votes(per_page: 1)
+            votes = @post.votes(per_page: 1, order: 'asc')
             expect(votes.size).to be(1)
 
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?older=508515&per_page=1").
               to_return(File.new("./spec/support/get_post_votes_per_page_older.txt"))
 
-            votes = @post.votes(per_page: 1, older: votes.first['id'])
+            votes = @post.votes(per_page: 1, order: 'asc', newer: votes.first['id'])
             expect(votes.size).to be(1)
-            expect(votes.first['user']['username']).to eq('mikejarema')
+            expect(votes.first['user']['username']).to eq('rrhoover')
           end
 
           describe 'associated objects' do
