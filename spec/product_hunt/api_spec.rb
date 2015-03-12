@@ -88,7 +88,7 @@ describe ProductHunt do
           end
 
           it 'implements votes#index and yields the first voter' do
-            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes").
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?order=asc").
               to_return(File.new("./spec/support/get_post_votes.txt"))
 
             vote = @post.votes(order: 'asc').first
@@ -98,14 +98,14 @@ describe ProductHunt do
           end
 
           it 'implements votes#index with pagination' do
-            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?per_page=1").
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?per_page=1&order=asc").
               to_return(File.new("./spec/support/get_post_votes_per_page.txt"))
 
             votes = @post.votes(per_page: 1, order: 'asc')
             expect(votes.size).to be(1)
 
-            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?older=508515&per_page=1").
-              to_return(File.new("./spec/support/get_post_votes_per_page_older.txt"))
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?newer=46164&per_page=1&order=asc").
+              to_return(File.new("./spec/support/get_post_votes_per_page_newer.txt"))
 
             votes = @post.votes(per_page: 1, order: 'asc', newer: votes.first['id'])
             expect(votes.size).to be(1)
@@ -117,6 +117,8 @@ describe ProductHunt do
             before(:each) do
               stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes").
                 to_return(File.new("./spec/support/get_post_votes.txt"))
+              stub_request(:get, "https://api.producthunt.com/v1/users/962").
+                to_return(File.new("./spec/support/get_user_962.txt"))
 
               @vote = @post.votes.first
             end
