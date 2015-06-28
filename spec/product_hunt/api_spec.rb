@@ -47,40 +47,44 @@ describe ProductHunt do
     end
 
     describe 'Posts' do
+      context 'when no date is passed' do
 
-      it 'implements posts#index and yields the hunts for today' do
-        stub_request(:get, "https://api.producthunt.com/v1/posts").
-          to_return(lambda { |request|
-            File.new("./spec/support/index_response.txt").read.
-              gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
-              gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
-          })
+        it 'implements posts#index and yields the hunts for today' do
+          stub_request(:get, "https://api.producthunt.com/v1/posts").
+            to_return(lambda { |request|
+              File.new("./spec/support/index_response.txt").read.
+                gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
+                gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
+            })
 
-        posts = @client.posts
-        expect(posts.size).to be > 0
+          posts = @client.posts
+          expect(posts.size).to be > 0
 
-        post = posts.first
-        day = post.day
+          post = posts.first
+          day = post.day
 
-        expect(Time.now.to_date - day).to be <= 1 # either today's or yesterdays
+          expect(Time.now.to_date - day).to be <= 1 # either today's or yesterdays
+        end
       end
 
-      it 'implements posts#index and yields the hunts for days_ago: 10' do
-        stub_request(:get, "https://api.producthunt.com/v1/posts?days_ago=10").
-          to_return(lambda { |request|
-            File.new("./spec/support/index_with_10day_param_response.txt").read.
-              gsub(/POST_TIMESTAMP/, (Time.now - 10 * 86400).strftime(TIMESTAMP_FORMAT)).
-              gsub(/POST_DATESTAMP/, (Time.now - 10 * 86400).strftime(DATESTAMP_FORMAT))
-          })
+      context 'when a date is passed' do
+        it 'implements posts#index and yields the hunts for days_ago: 10' do
+          stub_request(:get, "https://api.producthunt.com/v1/posts?days_ago=10").
+            to_return(lambda { |request|
+              File.new("./spec/support/index_with_10day_param_response.txt").read.
+                gsub(/POST_TIMESTAMP/, (Time.now - 10 * 86400).strftime(TIMESTAMP_FORMAT)).
+                gsub(/POST_DATESTAMP/, (Time.now - 10 * 86400).strftime(DATESTAMP_FORMAT))
+            })
 
-        posts = @client.posts(days_ago: 10)
-        expect(posts.size).to be > 0
+          posts = @client.posts(days_ago: 10)
+          expect(posts.size).to be > 0
 
-        post = posts.first
-        day = post.day
+          post = posts.first
+          day = post.day
 
-        expect(Time.now.to_date - day).to be >= 10 # at least 10 day old and
-        expect(Time.now.to_date - day).to be <= 11 # at most 11 days old
+          expect(Time.now.to_date - day).to be >= 10 # at least 10 day old and
+          expect(Time.now.to_date - day).to be <= 11 # at most 11 days old
+        end
       end
 
       describe 'by id' do
@@ -262,6 +266,24 @@ describe ProductHunt do
 
       it 'should not attempt to instantiate a User where its attributes do not imply one' do
         expect { @user_entity_without_associated_post_or_user.user }.to raise_error(NoMethodError)
+      end
+
+    end
+
+    describe 'Current user' do
+      before(:each) do
+        stub_request(:get, "https://api.producthunt.com/v1/me").
+          to_return(File.new("./spec/support/me.txt"))
+      end
+
+      it 'implements #me and yields the details of currently authenticated user' do
+        stub_request(:get, "https://api.producthunt.com/v1/me").
+          to_return(File.new("./spec/support/get_user.txt"))
+
+        user = @client.me
+
+        expect(user['name']).to eq('Ryan Hoover')
+        expect(user['id']).to eq(2)
       end
 
     end

@@ -1,3 +1,4 @@
+require 'product_hunt/api/current_user'
 require 'product_hunt/api/users'
 require 'product_hunt/api/posts'
 
