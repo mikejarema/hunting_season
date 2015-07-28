@@ -5,7 +5,7 @@ module ProductHunt
       PATH = "/posts"
 
       def find_all_by_url(url)
-        fetch(PATH + "/all", options)["posts"].map{ |post| Post.new(post, self) }
+        fetch(PATH + "/all", {'search[url]' => url})["posts"].map{ |post| Post.new(post, self) }
       end
       
       def posts(options = {})
