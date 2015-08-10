@@ -30,18 +30,26 @@ describe ProductHunt do
         expect(posts.etag).to be_a_producthunt_etag("b45b3ee1d10ba50fae6bbc6d9fb79a88")
       end
 
-      it 'should allow an ETAG to pass via custom headers' do
-        stub_request(:get, "https://api.producthunt.com/v1/posts").
-          with(headers: { 'If-None-Match' => 'c9ab3ee1d10ba50fae6bbc6d9fb79a2a' }).
-          to_return( lambda { |request|
-            File.new("./spec/support/webmocks/index_response.txt").read.
-              gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
-              gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
-          })
+      describe "passing ETAG to API" do
+        before(:each) do
+          stub_request(:get, "https://api.producthunt.com/v1/posts").
+            with(headers: { 'If-None-Match' => 'c9ab3ee1d10ba50fae6bbc6d9fb79a2a' }).
+            to_return( lambda { |request|
+              File.new("./spec/support/webmocks/index_response.txt").read.
+                gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
+                gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
+            })
+        end
 
-        posts = @client.posts( headers: { 'If-None-Match' => 'c9ab3ee1d10ba50fae6bbc6d9fb79a2a' })
+        it 'should allow passing via custom header' do
+          posts = @client.posts(headers: { 'If-None-Match' => 'c9ab3ee1d10ba50fae6bbc6d9fb79a2a' })
+          expect(posts.etag).to be_a_producthunt_etag("b45b3ee1d10ba50fae6bbc6d9fb79a88")
+        end
 
-        expect(posts.etag).to be_a_producthunt_etag("b45b3ee1d10ba50fae6bbc6d9fb79a88")
+        it 'should allow passing via explicit parameter' do
+          posts = @client.posts(etag: 'c9ab3ee1d10ba50fae6bbc6d9fb79a2a')
+          expect(posts.etag).to be_a_producthunt_etag("b45b3ee1d10ba50fae6bbc6d9fb79a88")
+        end
       end
 
       describe '#modified?' do

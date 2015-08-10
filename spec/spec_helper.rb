@@ -3,6 +3,10 @@ Bundler.setup
 
 require 'hunting_season'
 
+Dir[File.dirname(__FILE__) + "/support/matchers/*.rb"].each do |path|
+  require File.join(path) if path !~ /_spec\.rb\z/
+end
+
 RSpec.configure do |config|
 
   # By default we're stubbing out the web requests to api.producthunt.com, but

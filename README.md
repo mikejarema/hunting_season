@@ -148,10 +148,12 @@ post = client.post(3372)
 etag = post.etag
 ```
 
-You then can leverage [Product Hunt's API support](https://api.producthunt.com/v1/docs/example_performance_tips/use_the_e-tag_http_header) to increase performance by passing this etag as a custom header on subsequent requests. If a record has NOT changed, it will respond to `#modified?` with false.
+You then can leverage [Product Hunt's API support](https://api.producthunt.com/v1/docs/example_performance_tips/use_the_e-tag_http_header) to increase performance by passing this etag on subsequent requests. If a record has NOT changed, it will respond to `#modified?` with false.
 
 ```ruby
-post = client.post(3372, headers: { 'If-None-Match': etag })
+post = client.post(3372, headers: { 'If-None-Match': etag }) # pass as custom header
+post = client.post(3372, etag: etag)                         # OR explicitly
+
 if post.modified?
   # do something with the modified post
 else

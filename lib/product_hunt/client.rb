@@ -21,6 +21,11 @@ module ProductHunt
         config = config.merge({headers: config[:headers].merge(headers)})
       end
 
+      if params.has_key?(:etag)
+        etag = params.delete(:etag)
+        config = config.merge({headers: config[:headers].merge({'If-None-Match' => etag})})
+      end
+
       queryopts = if params.is_a?(Enumerable) && params.size > 0
         "?" + URI.encode_www_form(params)
       end
