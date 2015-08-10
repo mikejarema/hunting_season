@@ -15,7 +15,7 @@
 
 When you have a valid token, simply instantiate the `ProductHunt::Client` as follows:
 
-```
+```ruby
 client = ProductHunt::Client.new('mytoken')
 ```
 
@@ -32,7 +32,7 @@ Look up a post using a required numeric ID.
 Post attributes are listed in the API docs and accessed like `post["name"]`, `post["id"]`, etc.
 
 Example:
-```
+```ruby
 client = ProductHunt::Client.new('mytoken')
 
 post = client.post(3372)
@@ -50,7 +50,7 @@ Look up a post's votes, with optional ordering and pagination.
 Post attributes are listed in the API docs and accessed like `vote["user"]`, `vote["id"]`, etc.
 
 Example, look up a post's votes and paginate through them in ascending order:
-```
+```ruby
 client = ProductHunt::Client.new('mytoken')
 post = client.post(3372)
 
@@ -68,6 +68,21 @@ votes_page_2[0]["id"]
 ```
 
 
+### [users#index - Get all users](https://api.producthunt.com/v1/docs/users/users_index_get_all_users)
+
+Get all users using ordering and pagination as noted in the official API docs.
+
+Example:
+```ruby
+client = ProductHunt::Client.new('mytoken')
+
+users = client.users(order: 'asc')
+users.first["name"] # -> "Nathan Bashaw"
+users.first["headline"] # -> "Working on something new :)"
+users.first["id"] # -> 1
+```
+
+
 ### [users#show - Get details of a user](https://api.producthunt.com/v1/docs/users/users_show_get_details_of_a_user)
 
 Look up a user by username or id.
@@ -75,7 +90,7 @@ Look up a user by username or id.
 User attributes are listed in the API docs and accessed like `user["name"]`, `user["headline"]`, etc.
 
 Example:
-```
+```ruby
 client = ProductHunt::Client.new('mytoken')
 user = client.user('rrhoover')
 user["name"]
@@ -90,7 +105,7 @@ user["headline"]
 Look up a post's comments, with optional ordering and pagination.
 
 Example, look up a post's comments and paginate through them in ascending order:
-```
+```ruby
 client = ProductHunt::Client.new('mytoken')
 post = client.post(3372)
 
@@ -115,7 +130,7 @@ For some API responses, an ID reference to or partial details for an associated 
 Currently `#post` and `#user` apply when the associated record is present.
 
 Example:
-```
+```ruby
 comment = ProductHunt::Client.new('mytoken').post(3372).comments(order: 'asc').first
 
 user_hash = comment["user"]   # this will access the partial user details embedded in the response to the #comments call above
@@ -167,7 +182,7 @@ There are two ways to run tests:
 
 1. `bundle exec rake` which stubs out all of the calls to Product Hunt's API to local files.
 
-2. `TOKEN=mytoken USE_LIVE_API=true bundle exec rake` which runs tests against live data from the Product Hunt API.
+2. `TOKEN=mytoken USE_LIVE_API=true bundle exec rake` which runs tests against live data from the Product Hunt API using your developer token.
 
 
 ## Contributing

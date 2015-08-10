@@ -5,7 +5,9 @@ module ProductHunt
       PATH = "/users"
 
       def users(options = {})
-        fetch(PATH, options)["users"].map{ |user| User.new(user, self) }
+        process(PATH, options) do |response|
+          response["users"].map{ |user| User.new(user, self) }
+        end
       end
 
       def user(id, options = {})

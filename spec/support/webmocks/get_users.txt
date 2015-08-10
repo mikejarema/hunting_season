@@ -1,0 +1,43 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "users": [
+        {
+            "created_at": "2013-11-21T23:06:54.070-08:00",
+            "headline": "Working on something new :)",
+            "id": 1,
+            "image_url": {
+                "original": "http://avatars-cdn.producthunt.com/1/original"
+            },
+            "name": "Nathan Bashaw",
+            "profile_url": "http://www.producthunt.com/@nbashaw",
+            "username": "nbashaw",
+            "website_url": "http://nbashaw.github.io"
+        },
+        {
+            "created_at": "2013-11-21T23:28:43.634-08:00",
+            "headline": "Product Hunt",
+            "id": 2,
+            "image_url": {
+                "original": "http://avatars-cdn.producthunt.com/2/original"
+            },
+            "name": "Ryan Hoover",
+            "profile_url": "http://www.producthunt.com/@rrhoover",
+            "username": "rrhoover",
+            "website_url": "http://ryanhoover.me"
+        },
+        {
+            "created_at": "2013-11-26T20:58:39.049-08:00",
+            "headline": "entrepreneur, sequoia capital",
+            "id": 3,
+            "image_url": {
+                "original": "http://avatars-cdn.producthunt.com/3/original"
+            },
+            "name": "ash bhoopathy",
+            "profile_url": "http://www.producthunt.com/@ashbhoopathy",
+            "username": "ashbhoopathy",
+            "website_url": "http://yakshaving.net"
+        }
+    ]
+}
