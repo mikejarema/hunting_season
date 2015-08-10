@@ -137,6 +137,26 @@ post_object["name"]
 # => "namevine"
 ```
 
+
+## Etag
+
+You can retrieve last request etag using `ProductHunt::Client#etag` :
+
+```ruby
+client = ProductHunt::Client.new('mytoken')
+post = client.post(3372)
+etag = client.last_etag
+```
+
+You then can leverage [its API support](https://api.producthunt.com/v1/docs/example_performance_tips/use_the_e-tag_http_header) to increase performances by passing it as custom header:
+
+```ruby
+post = client.post(3372, headers: { 'If-None-Match': etag })
+```
+
+This will ensure you get only newest records. If there is no new record, API methods will return nil.
+
+
 ## Tests
 
 There are two ways to run tests:

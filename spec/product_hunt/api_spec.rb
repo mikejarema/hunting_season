@@ -15,6 +15,37 @@ describe ProductHunt do
       expect(ENV["TOKEN"]).to_not be_nil
     end
 
+    describe 'Client' do
+
+      it 'stores last ETAG value' do
+        stub_request(:get, "https://api.producthunt.com/v1/posts").
+          to_return( lambda { |request|
+            File.new("./spec/support/index_response.txt").read.
+              gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
+              gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
+          })
+
+        posts = @client.posts
+
+        expect(@client.last_etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
+      end
+
+      it 'allows to pass custom headers' do
+        stub_request(:get, "https://api.producthunt.com/v1/posts").
+          with(headers: { 'If-None-Match' => '"c9ab3ee1d10ba50fae6bbc6d9fb79a2a"' }).
+          to_return( lambda { |request|
+            File.new("./spec/support/index_response.txt").read.
+              gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
+              gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
+          })
+
+        posts = @client.posts( headers: { 'If-None-Match' => '"c9ab3ee1d10ba50fae6bbc6d9fb79a2a"' })
+
+        expect(@client.last_etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
+      end
+
+    end
+
     describe 'Posts' do
 
       it 'implements posts#index and yields the hunts for today' do

@@ -1,5 +1,6 @@
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
+ETag: "b45b3ee1d10ba50fae6bbc6d9fb79a88"
 
 {
     "posts": [
