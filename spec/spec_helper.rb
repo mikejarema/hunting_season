@@ -13,6 +13,7 @@ RSpec.configure do |config|
     end
   else
     require 'webmock/rspec'
+    ENV['TOKEN'] ||= "dummy-token-to-ensure-specs-run"
   end
 
 end

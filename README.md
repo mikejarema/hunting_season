@@ -141,9 +141,9 @@ post_object["name"]
 
 There are two ways to run tests:
 
-1. `env TOKEN=mytoken bundle exec rake` which stubs out all of the calls to Product Hunt's API to local files.
+1. `bundle exec rake` which stubs out all of the calls to Product Hunt's API to local files.
 
-2. `env TOKEN=mytoken SKIP_CALL_STUBS=true bundle exec rake` which runs tests against live data from the Product Hunt API.
+2. `TOKEN=mytoken SKIP_CALL_STUBS=true bundle exec rake` which runs tests against live data from the Product Hunt API.
 
 
 ## Contributing
