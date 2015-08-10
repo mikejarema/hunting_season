@@ -4,6 +4,10 @@ module ProductHunt
 
       PATH = "/posts"
 
+      def find_all_by_url(url)
+        fetch(PATH + "/all", {'search[url]' => url})["posts"].map{ |post| Post.new(post, self) }
+      end
+      
       def posts(options = {})
         process(PATH, options) do |response|
           response["posts"].map{ |post| Post.new(post, self) }
