@@ -10,7 +10,7 @@ module ProductHunt
         end
       end
 
-      def all(options = {})
+      def all_posts(options = {})
         process(PATH + "/all", options) do |response|
           response["posts"].map{ |post| Post.new(post, self) }
         end

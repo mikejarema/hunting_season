@@ -25,6 +25,39 @@ client = ProductHunt::Client.new('mytoken')
 `hunting_season` is a work-in-progress, please [contribute](#contributing) if you need additional functionality.
 
 
+### [posts#index - Get the posts of today](https://api.producthunt.com/v1/docs/posts/posts_index_get_the_posts_of_today)
+
+Look up today's posts.
+
+Post attributes are listed in the API docs and accessed like `post["name"]`, `post["id"]`, etc.
+
+Example:
+```ruby
+client = ProductHunt::Client.new('mytoken')
+
+posts = client.posts
+posts.size       # -> 14
+posts[0]["name"] # -> "Content Marketing Stack"
+posts[0]["id"]   # -> 30425
+```
+
+
+### [posts#all - Get all the newest posts](https://api.producthunt.com/v1/docs/posts/posts_all_get_all_the_newest_posts)
+
+Look up all posts.
+
+Post attributes are listed in the API docs and accessed like `post["name"]`, `post["id"]`, etc.
+
+Example:
+```ruby
+client = ProductHunt::Client.new('mytoken')
+
+posts = client.all_posts(per_page: 1, order: 'asc')
+posts[0]["name"] # -> "Ferro"
+posts[0]["id"]   # -> 3
+```
+
+
 ### [posts#show - Get details of a post](https://api.producthunt.com/v1/docs/posts/posts_show_get_details_of_a_post)
 
 Look up a post using a required numeric ID.
@@ -153,7 +186,7 @@ post_object["name"]
 ```
 
 
-## Etag
+## ETAG Support
 
 You can retrieve the etag for any call by calling `#etag` against the returned object or collection:
 

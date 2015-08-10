@@ -49,7 +49,7 @@ describe "Posts API" do
           File.new("./spec/support/webmocks/get_posts_all.txt").read
         })
 
-      posts = @client.all(newer: 0, order: 'asc')
+      posts = @client.all_posts(newer: 0, order: 'asc')
 
       expect(posts.first["name"]).to eq("Ferro")
       expect(posts.first["tagline"]).to eq("Keyboard interface to Google Chrome")
@@ -62,7 +62,7 @@ describe "Posts API" do
           File.new("./spec/support/webmocks/get_posts_all_search.txt").read
         })
 
-      posts = @client.all("search[url]" => 'http://namevine.com')
+      posts = @client.all_posts("search[url]" => 'http://namevine.com')
 
       expect(posts.first["name"]).to eq("namevine")
       expect(posts.first["tagline"]).to eq("Instantly Find Available Domains & Social Media Profiles")
