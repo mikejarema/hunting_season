@@ -49,7 +49,7 @@ describe "ETAG Support" do
         to_return(File.new("./spec/support/webmocks/get_post.txt"))
 
       @post = @client.post(3372, headers: { 'If-None-Match' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' })
-      @post.should be_modified
+      expect(@post).to be_modified
     end
 
     describe "on an unmodified record" do
@@ -67,7 +67,7 @@ describe "ETAG Support" do
 
 
       it 'should return false' do
-        @unmodified_post.should_not be_modified
+        expect(@unmodified_post).to_not be_modified
       end
 
       it 'should throw an exception when trying to access an attribute said record' do
