@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.authors       = ["Mike Jarema"]
   s.email         = %q{mike@jarema.com}
   s.files         = Dir.glob("{lib}/**/*") + %w(LICENSE README.md VERSION)
-  s.homepage      = %q{http://rubygems.org/gems/hunting_season}
+  s.homepage      = %q{https://github.com/mikejarema/hunting_season}
   s.require_paths = ["lib"]
 
   s.add_runtime_dependency "httparty", '~> 0'

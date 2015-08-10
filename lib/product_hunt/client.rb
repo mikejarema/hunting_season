@@ -30,19 +30,31 @@ module ProductHunt
 
     def process(path, params)
       response = fetch(path, params)
+      processed_response = nil
 
-      if response.code == 200 && block_given?
+      fail "Block required to process response" if !block_given?
+
+      if response.code == 200
         processed_response = yield response
+        processed_response.define_singleton_method(:modified?) { true }
+      elsif response.code == 304
+        processed_response.define_singleton_method(:modified?) { false }
+        processed_response.define_singleton_method(:method_missing) do |symbol, args|
+          raise InvalidAccessToUnmodifiedRecordError.new("Trying to call `#{symbol}`")
+        end
       else
         fail "Still need to cover the other response codes and use cases for the API (eg. 304 not modified, error cases)"
       end
 
       if response.headers["etag"]
         fail "Object already defines #etag method" if processed_response.respond_to?(:etag)
-        processed_response.define_singleton_method(:etag) { response.headers["etag"] }
+        processed_response.define_singleton_method(:etag) { response.headers["etag"].gsub!(/\A"|"\z/, '') }
       end
 
       processed_response
     end
+  end
+
+  class InvalidAccessToUnmodifiedRecordError < StandardError
   end
 end

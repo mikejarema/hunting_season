@@ -5,7 +5,7 @@ describe ProductHunt do
   TIMESTAMP_FORMAT = '%FT%T.%L%:z'
   DATESTAMP_FORMAT = '%F'
 
-  before(:each) do
+  before(:all) do
     @client = ProductHunt::Client.new(ENV['TOKEN'] || 'my-token')
   end
 
@@ -20,35 +20,63 @@ describe ProductHunt do
       it 'should provide an ETAG on API calls' do
         stub_request(:get, "https://api.producthunt.com/v1/posts").
           to_return( lambda { |request|
-            File.new("./spec/support/index_response.txt").read.
+            File.new("./spec/support/webmocks/index_response.txt").read.
               gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
               gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
           })
 
         posts = @client.posts
 
-        expect(posts.etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
+        expect(posts.etag).to be_a_producthunt_etag("b45b3ee1d10ba50fae6bbc6d9fb79a88")
       end
 
       it 'should allow an ETAG to pass via custom headers' do
         stub_request(:get, "https://api.producthunt.com/v1/posts").
-          with(headers: { 'If-None-Match' => '"c9ab3ee1d10ba50fae6bbc6d9fb79a2a"' }).
+          with(headers: { 'If-None-Match' => 'c9ab3ee1d10ba50fae6bbc6d9fb79a2a' }).
           to_return( lambda { |request|
-            File.new("./spec/support/index_response.txt").read.
+            File.new("./spec/support/webmocks/index_response.txt").read.
               gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
               gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
           })
 
-        posts = @client.posts( headers: { 'If-None-Match' => '"c9ab3ee1d10ba50fae6bbc6d9fb79a2a"' })
+        posts = @client.posts( headers: { 'If-None-Match' => 'c9ab3ee1d10ba50fae6bbc6d9fb79a2a' })
 
-        expect(posts.etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
+        expect(posts.etag).to be_a_producthunt_etag("b45b3ee1d10ba50fae6bbc6d9fb79a88")
       end
 
       describe '#modified?' do
 
-        it 'should return true on a modified record'
-        it 'should return false on an unmodified record'
-        it 'should throw an exception when trying to access an attribute of an unmodified record'
+        it 'should return true on a modified record' do
+          stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
+            with(headers: { 'If-None-Match' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }).
+            to_return(File.new("./spec/support/webmocks/get_post.txt"))
+
+          @post = @client.post(3372, headers: { 'If-None-Match' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' })
+          @post.should be_modified
+        end
+
+        describe "on an unmodified record" do
+          before(:all) do
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
+              to_return(File.new("./spec/support/webmocks/get_post.txt"))
+
+            stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
+              with(headers: { 'If-None-Match' => 'aa5e181357bae02ad58f3cc3552e5b95' }).
+              to_return(File.new("./spec/support/webmocks/get_unmodified_post.txt"))
+
+            @post = @client.post(3372)
+            @unmodified_post = @client.post(3372, headers: { 'If-None-Match' => @post.etag })
+          end
+
+
+          it 'should return false' do
+            @unmodified_post.should_not be_modified
+          end
+
+          it 'should throw an exception when trying to access an attribute said record' do
+            expect { @unmodified_post["name"] }.to raise_error(ProductHunt::InvalidAccessToUnmodifiedRecordError)
+          end
+        end
 
       end
 
@@ -59,7 +87,7 @@ describe ProductHunt do
       it 'implements posts#index and yields the hunts for today' do
         stub_request(:get, "https://api.producthunt.com/v1/posts").
           to_return(lambda { |request|
-            File.new("./spec/support/index_response.txt").read.
+            File.new("./spec/support/webmocks/index_response.txt").read.
               gsub(/POST_TIMESTAMP/, (Time.now - 86400).strftime(TIMESTAMP_FORMAT)).
               gsub(/POST_DATESTAMP/, (Time.now - 86400).strftime(DATESTAMP_FORMAT))
           })
@@ -76,7 +104,7 @@ describe ProductHunt do
       it 'implements posts#index and yields the hunts for days_ago: 10' do
         stub_request(:get, "https://api.producthunt.com/v1/posts?days_ago=10").
           to_return(lambda { |request|
-            File.new("./spec/support/index_with_10day_param_response.txt").read.
+            File.new("./spec/support/webmocks/index_with_10day_param_response.txt").read.
               gsub(/POST_TIMESTAMP/, (Time.now - 10 * 86400).strftime(TIMESTAMP_FORMAT)).
               gsub(/POST_DATESTAMP/, (Time.now - 10 * 86400).strftime(DATESTAMP_FORMAT))
           })
@@ -95,7 +123,7 @@ describe ProductHunt do
 
         before(:each) do
           stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
-            to_return(File.new("./spec/support/get_post.txt"))
+            to_return(File.new("./spec/support/webmocks/get_post.txt"))
 
           @post = @client.post(3372)
         end
@@ -108,7 +136,7 @@ describe ProductHunt do
 
           it 'should return a User object when #user is called' do
             stub_request(:get, "https://api.producthunt.com/v1/users/962").
-              to_return(File.new("./spec/support/get_user_962.txt"))
+              to_return(File.new("./spec/support/webmocks/get_user_962.txt"))
 
             user = @post.user
             expect(user["id"]).to eq(@post["user"]["id"])
@@ -121,14 +149,14 @@ describe ProductHunt do
 
           before(:each) do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372").
-              to_return(File.new("./spec/support/get_post.txt"))
+              to_return(File.new("./spec/support/webmocks/get_post.txt"))
 
             @post = @client.post(3372)
           end
 
           it 'implements votes#index and yields the first voter' do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?order=asc").
-              to_return(File.new("./spec/support/get_post_votes.txt"))
+              to_return(File.new("./spec/support/webmocks/get_post_votes.txt"))
 
             vote = @post.votes(order: 'asc').first
 
@@ -138,13 +166,13 @@ describe ProductHunt do
 
           it 'implements votes#index with pagination' do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?per_page=1&order=asc").
-              to_return(File.new("./spec/support/get_post_votes_per_page.txt"))
+              to_return(File.new("./spec/support/webmocks/get_post_votes_per_page.txt"))
 
             votes = @post.votes(per_page: 1, order: 'asc')
             expect(votes.size).to be(1)
 
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes?newer=46164&per_page=1&order=asc").
-              to_return(File.new("./spec/support/get_post_votes_per_page_newer.txt"))
+              to_return(File.new("./spec/support/webmocks/get_post_votes_per_page_newer.txt"))
 
             votes = @post.votes(per_page: 1, order: 'asc', newer: votes.first['id'])
             expect(votes.size).to be(1)
@@ -155,16 +183,16 @@ describe ProductHunt do
 
             before(:each) do
               stub_request(:get, "https://api.producthunt.com/v1/posts/3372/votes").
-                to_return(File.new("./spec/support/get_post_votes.txt"))
+                to_return(File.new("./spec/support/webmocks/get_post_votes.txt"))
               stub_request(:get, "https://api.producthunt.com/v1/users/962").
-                to_return(File.new("./spec/support/get_user_962.txt"))
+                to_return(File.new("./spec/support/webmocks/get_user_962.txt"))
 
               @vote = @post.votes.first
             end
 
             it 'should return a User object when #user is called' do
               stub_request(:get, "https://api.producthunt.com/v1/users/98237").
-                to_return(File.new("./spec/support/get_user_98237.txt"))
+                to_return(File.new("./spec/support/webmocks/get_user_98237.txt"))
 
               user = @vote.user
               expect(user).to be_a(ProductHunt::User)
@@ -185,7 +213,7 @@ describe ProductHunt do
         describe 'Comments' do
           it 'implements comments#index and yields the first voter' do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc").
-              to_return(File.new("./spec/support/comments_index.txt"))
+              to_return(File.new("./spec/support/webmocks/comments_index.txt"))
 
             comment = @post.comments(order: 'asc').first
 
@@ -195,13 +223,13 @@ describe ProductHunt do
 
           it 'implements comments#index with pagination' do
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc&per_page=1").
-              to_return(File.new("./spec/support/comments_index_per_page.txt"))
+              to_return(File.new("./spec/support/webmocks/comments_index_per_page.txt"))
 
             comments = @post.comments(per_page: 1, order: 'asc')
             expect(comments.size).to be(1)
 
             stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?per_page=1&order=asc&newer=11378").
-              to_return(File.new("./spec/support/comments_index_per_page_newer.txt"))
+              to_return(File.new("./spec/support/webmocks/comments_index_per_page_newer.txt"))
 
             comments = @post.comments(per_page: 1, order: 'asc', newer: comments.first['id'])
             expect(comments.size).to be(1)
@@ -212,14 +240,14 @@ describe ProductHunt do
 
             before(:each) do
               stub_request(:get, "https://api.producthunt.com/v1/posts/3372/comments?order=asc").
-                to_return(File.new("./spec/support/comments_index.txt"))
+                to_return(File.new("./spec/support/webmocks/comments_index.txt"))
 
               @comment = @post.comments(order: 'asc').first
             end
 
             it 'should return a User object when #user is called' do
               stub_request(:get, "https://api.producthunt.com/v1/users/4557").
-                to_return(File.new("./spec/support/get_user_4557.txt"))
+                to_return(File.new("./spec/support/webmocks/get_user_4557.txt"))
 
               user = @comment.user
               expect(user).to be_a(ProductHunt::User)
@@ -245,7 +273,7 @@ describe ProductHunt do
 
       it 'implements users#show and yields the details of a specific user' do
         stub_request(:get, "https://api.producthunt.com/v1/users/rrhoover").
-          to_return(File.new("./spec/support/get_user.txt"))
+          to_return(File.new("./spec/support/webmocks/get_user.txt"))
 
         user = @client.user('rrhoover')
 
@@ -259,7 +287,7 @@ describe ProductHunt do
 
       before(:each) do
         stub_request(:get, "https://api.producthunt.com/v1/users/rrhoover").
-          to_return(File.new("./spec/support/get_user.txt"))
+          to_return(File.new("./spec/support/webmocks/get_user.txt"))
 
         @user_entity_without_associated_post_or_user = @client.user('rrhoover')
       end
