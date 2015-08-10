@@ -41,6 +41,36 @@ describe "Posts API" do
     expect(Time.now.to_date - day).to be <= 11 # at most 11 days old
   end
 
+  describe 'all posts endpoint' do
+
+    it 'should list the earliest products hunted' do
+      stub_request(:get, "https://api.producthunt.com/v1/posts/all?order=asc&newer=0").
+        to_return(lambda { |request|
+          File.new("./spec/support/webmocks/get_posts_all.txt").read
+        })
+
+      posts = @client.all(newer: 0, order: 'asc')
+
+      expect(posts.first["name"]).to eq("Ferro")
+      expect(posts.first["tagline"]).to eq("Keyboard interface to Google Chrome")
+      expect(posts.first["id"]).to eq(3)
+    end
+
+    it 'should search by URL' do
+      stub_request(:get, "https://api.producthunt.com/v1/posts/all?search[url]=http://namevine.com").
+        to_return(lambda { |request|
+          File.new("./spec/support/webmocks/get_posts_all_search.txt").read
+        })
+
+      posts = @client.all("search[url]" => 'http://namevine.com')
+
+      expect(posts.first["name"]).to eq("namevine")
+      expect(posts.first["tagline"]).to eq("Instantly Find Available Domains & Social Media Profiles")
+      expect(posts.first["id"]).to eq(3372)
+    end
+
+  end
+
   describe 'by id' do
 
     before(:each) do

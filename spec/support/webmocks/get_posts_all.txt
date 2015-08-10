@@ -1,0 +1,77 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "posts": [
+        {
+            "comments_count": 1,
+            "created_at": "2013-11-24T09:48:46.357-08:00",
+            "current_user": {
+                "commented_on_post": false,
+                "voted_for_post": false
+            },
+            "day": "2013-11-24",
+            "discussion_url": "http://www.producthunt.com/tech/ferro",
+            "exclusive": null,
+            "featured": true,
+            "id": 3,
+            "maker_inside": false,
+            "makers": [],
+            "name": "Ferro",
+            "redirect_url": "http://www.producthunt.com/r/07638f3e05/3?app_id=615",
+            "screenshot_url": {
+                "300px": "https://api.url2png.com/v6/P5329C1FA0ECB6/d49f16e517b4a933f7b4cef73de1188b/png/?thumbnail_max_width=300&url=http%3A%2F%2Fwww.getferro.com%2F",
+                "850px": "https://api.url2png.com/v6/P5329C1FA0ECB6/0c67e46767e79d741ce1b9b84b5712aa/png/?thumbnail_max_width=850&url=http%3A%2F%2Fwww.getferro.com%2F"
+            },
+            "tagline": "Keyboard interface to Google Chrome",
+            "user": {
+                "created_at": "2013-11-21T23:28:43.634-08:00",
+                "headline": "Product Hunt",
+                "id": 2,
+                "image_url": {
+                    "original": "http://avatars-cdn.producthunt.com/2/original"
+                },
+                "name": "Ryan Hoover",
+                "profile_url": "http://www.producthunt.com/@rrhoover",
+                "username": "rrhoover",
+                "website_url": "http://ryanhoover.me"
+            },
+            "votes_count": 5
+        },
+        {
+            "comments_count": 1,
+            "created_at": "2013-11-24T22:23:07.126-08:00",
+            "current_user": {
+                "commented_on_post": false,
+                "voted_for_post": false
+            },
+            "day": "2013-11-24",
+            "discussion_url": "http://www.producthunt.com/tech/michron",
+            "exclusive": null,
+            "featured": true,
+            "id": 6,
+            "maker_inside": false,
+            "makers": [],
+            "name": "Michron",
+            "redirect_url": "http://www.producthunt.com/r/ca2493c561/6?app_id=615",
+            "screenshot_url": {
+                "300px": "https://api.url2png.com/v6/P5329C1FA0ECB6/f5ba805890493802731dc129282a67fc/png/?thumbnail_max_width=300&url=http%3A%2F%2Fwww.kickstarter.com%2Fprojects%2Fvivolabs%2Fmichron-timelapse-for-everyone%3Fref%3Dcategory",
+                "850px": "https://api.url2png.com/v6/P5329C1FA0ECB6/7ecf7991585c3c15763394e62d7ce040/png/?thumbnail_max_width=850&url=http%3A%2F%2Fwww.kickstarter.com%2Fprojects%2Fvivolabs%2Fmichron-timelapse-for-everyone%3Fref%3Dcategory"
+            },
+            "tagline": "Timelapse for everyone",
+            "user": {
+                "created_at": "2013-11-21T23:06:54.070-08:00",
+                "headline": "Working on something new :)",
+                "id": 1,
+                "image_url": {
+                    "original": "http://avatars-cdn.producthunt.com/1/original"
+                },
+                "name": "Nathan Bashaw",
+                "profile_url": "http://www.producthunt.com/@nbashaw",
+                "username": "nbashaw",
+                "website_url": "http://nbashaw.github.io"
+            },
+            "votes_count": 1
+        }
+    ]
+}
