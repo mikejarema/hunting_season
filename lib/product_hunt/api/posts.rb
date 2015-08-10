@@ -5,20 +5,27 @@ module ProductHunt
       PATH = "/posts"
 
       def posts(options = {})
-        fetch(PATH, options)["posts"].map{ |post| Post.new(post, self) }
+        process(PATH, options) do |response|
+          response["posts"].map{ |post| Post.new(post, self) }
+        end
       end
 
       def post(id, options = {})
-        post = fetch(PATH + "/#{id}", options)["post"]
-        Post.new(post, self)
+        process(PATH + "/#{id}", options) do |response|
+          Post.new(response["post"], self)
+        end
       end
 
       def comments_for_post(id, options = {})
-        fetch(PATH + "/#{id}/comments", options)["comments"].map{ |c| Comment.new(c, self) }
+        process(PATH + "/#{id}/comments", options) do |response|
+          response["comments"].map{ |c| Comment.new(c, self) }
+        end
       end
 
       def votes_for_post(id, options = {})
-        fetch(PATH + "/#{id}/votes", options)["votes"].map{ |c| Vote.new(c, self) }
+        process(PATH + "/#{id}/votes", options) do |response|
+          response["votes"].map{ |c| Vote.new(c, self) }
+        end
       end
     end
   end

@@ -137,13 +137,37 @@ post_object["name"]
 # => "namevine"
 ```
 
+
+## Etag
+
+You can retrieve the etag for any call by calling `#etag` against the returned object or collection:
+
+```ruby
+client = ProductHunt::Client.new('mytoken')
+post = client.post(3372)
+etag = post.etag
+```
+
+You then can leverage [Product Hunt's API support](https://api.producthunt.com/v1/docs/example_performance_tips/use_the_e-tag_http_header) to increase performance by passing this etag on subsequent requests. If a record has NOT changed, it will respond to `#modified?` with false.
+
+```ruby
+post = client.post(3372, headers: { 'If-None-Match': etag }) # pass as custom header
+post = client.post(3372, etag: etag)                         # OR explicitly
+
+if post.modified?
+  # do something with the modified post
+else
+  # the post remains unmodified, trying to access any attributes on this object will raise an exception
+end
+```
+
 ## Tests
 
 There are two ways to run tests:
 
 1. `bundle exec rake` which stubs out all of the calls to Product Hunt's API to local files.
 
-2. `TOKEN=mytoken SKIP_CALL_STUBS=true bundle exec rake` which runs tests against live data from the Product Hunt API.
+2. `TOKEN=mytoken USE_LIVE_API=true bundle exec rake` which runs tests against live data from the Product Hunt API.
 
 
 ## Contributing

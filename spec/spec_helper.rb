@@ -3,13 +3,25 @@ Bundler.setup
 
 require 'hunting_season'
 
+Dir[File.dirname(__FILE__) + "/support/matchers/*.rb"].each do |path|
+  require File.join(path) if path !~ /_spec\.rb\z/
+end
+
 RSpec.configure do |config|
 
   # By default we're stubbing out the web requests to api.producthunt.com, but
-  # SKIP_CALL_STUBS=true allows these calls to pass through to the actual API
-  if ENV['SKIP_CALL_STUBS'].is_a?(String) && ['true', '1', 'yes', 'indubitably'].include?(ENV['SKIP_CALL_STUBS'].downcase)
+  # USE_LIVE_API=true allows these calls to pass through to the actual API
+  config.define_singleton_method(:use_live_api?) do
+    ENV['USE_LIVE_API'].is_a?(String) && ['true', '1', 'yes', 'indubitably'].include?(ENV['USE_LIVE_API'].downcase)
+  end
+
+  if config.use_live_api?
     def stub_request(*args)
-      double(Object, to_return: nil) # this will gobble up calls to stub_request(method, url).to_return(data)
+      # this will gobble up calls to stub_request(method, url).with(something)to_return(data)
+      obj = Object.new
+      obj.define_singleton_method(:to_return) { |*args| nil }
+      obj.define_singleton_method(:with)      { |*args| obj }
+      obj
     end
   else
     require 'webmock/rspec'
