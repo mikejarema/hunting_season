@@ -5,8 +5,9 @@ module ProductHunt
       PATH = "/users"
 
       def user(id, options = {})
-        user = fetch(PATH + "/#{id}", options)
-        User.new(user["user"], self) if user.code == 200
+        process(PATH + "/#{id}", options) do |response|
+          User.new(response["user"], self)
+        end
       end
 
     end

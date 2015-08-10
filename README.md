@@ -140,22 +140,24 @@ post_object["name"]
 
 ## Etag
 
-You can retrieve last request etag using `ProductHunt::Client#etag` :
+You can retrieve the etag for any call by calling `#etag` against the returned object or collection:
 
 ```ruby
 client = ProductHunt::Client.new('mytoken')
 post = client.post(3372)
-etag = client.last_etag
+etag = post.etag
 ```
 
-You then can leverage [its API support](https://api.producthunt.com/v1/docs/example_performance_tips/use_the_e-tag_http_header) to increase performances by passing it as custom header:
+You then can leverage [Product Hunt's API support](https://api.producthunt.com/v1/docs/example_performance_tips/use_the_e-tag_http_header) to increase performance by passing this etag as a custom header on subsequent requests. If a record has NOT changed, it will respond to `#modified?` with false.
 
 ```ruby
 post = client.post(3372, headers: { 'If-None-Match': etag })
+if post.modified?
+  # do something with the modified post
+else
+  # the post remains unmodified, trying to access any attributes on this object will raise an exception
+end
 ```
-
-This will ensure you get only newest records. If there is no new record, API methods will return nil.
-
 
 ## Tests
 

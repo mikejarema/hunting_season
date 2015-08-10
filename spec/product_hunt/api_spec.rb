@@ -15,9 +15,9 @@ describe ProductHunt do
       expect(ENV["TOKEN"]).to_not be_nil
     end
 
-    describe 'Client' do
+    describe 'ETAG support' do
 
-      it 'stores last ETAG value' do
+      it 'should provide an ETAG on API calls' do
         stub_request(:get, "https://api.producthunt.com/v1/posts").
           to_return( lambda { |request|
             File.new("./spec/support/index_response.txt").read.
@@ -27,10 +27,10 @@ describe ProductHunt do
 
         posts = @client.posts
 
-        expect(@client.last_etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
+        expect(posts.etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
       end
 
-      it 'allows to pass custom headers' do
+      it 'should allow an ETAG to pass via custom headers' do
         stub_request(:get, "https://api.producthunt.com/v1/posts").
           with(headers: { 'If-None-Match' => '"c9ab3ee1d10ba50fae6bbc6d9fb79a2a"' }).
           to_return( lambda { |request|
@@ -41,7 +41,15 @@ describe ProductHunt do
 
         posts = @client.posts( headers: { 'If-None-Match' => '"c9ab3ee1d10ba50fae6bbc6d9fb79a2a"' })
 
-        expect(@client.last_etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
+        expect(posts.etag).to eq '"b45b3ee1d10ba50fae6bbc6d9fb79a88"'
+      end
+
+      describe '#modified?' do
+
+        it 'should return true on a modified record'
+        it 'should return false on an unmodified record'
+        it 'should throw an exception when trying to access an attribute of an unmodified record'
+
       end
 
     end

@@ -6,7 +6,6 @@ module ProductHunt
     include HTTParty
     base_uri 'https://api.producthunt.com/v1/'
     format :json
-    attr_reader :config, :last_etag
 
     include ProductHunt::API
 
@@ -15,17 +14,35 @@ module ProductHunt
     end
 
     def fetch(path, params)
-      headers = params.has_key?(:headers) ? params.delete(:headers) : {}
+      config = @config
+
+      if params.has_key?(:headers)
+        headers = params.delete(:headers)
+        config = config.merge({headers: config[:headers].merge(headers)})
+      end
+
       queryopts = if params.is_a?(Enumerable) && params.size > 0
         "?" + URI.encode_www_form(params)
       end
 
-      request_config = config.dup
-      request_config[ :headers ] = request_config[ :headers ].merge(headers)
+      self.class.get(path + (queryopts || ""), config)
+    end
 
-      response = self.class.get(path + (queryopts || ""), request_config)
-      @last_etag = response.headers['etag']
-      response
+    def process(path, params)
+      response = fetch(path, params)
+
+      if response.code == 200 && block_given?
+        processed_response = yield response
+      else
+        fail "Still need to cover the other response codes and use cases for the API (eg. 304 not modified, error cases)"
+      end
+
+      if response.headers["etag"]
+        fail "Object already defines #etag method" if processed_response.respond_to?(:etag)
+        processed_response.define_singleton_method(:etag) { response.headers["etag"] }
+      end
+
+      processed_response
     end
   end
 end
